@@ -1,10 +1,13 @@
 ﻿Beverage myCoffee = new Coffee();
+myCoffee.Millilitres = 120;
 myCoffee = new AddOnSaltedCaramel(myCoffee);
 
 Console.WriteLine(myCoffee.Cost());
+Console.WriteLine(myCoffee.Millilitres);
 Console.WriteLine(myCoffee.Description());
 
 Beverage myTea = new Tea();
+myTea.Millilitres = 100;
 myTea = new AddOnSugar(myTea);
 myTea = new AddOnSugar(myTea);
 myTea = new AddOnSaltedCaramel(myTea);
@@ -12,6 +15,7 @@ myTea = new AddOnCream(myTea);
 myTea = new AddOnSpeakingDrink(myTea);
 
 Console.WriteLine(myTea.Cost());
+Console.WriteLine(myTea.Millilitres);
 Console.WriteLine(myTea.Description());
 
 
@@ -28,6 +32,7 @@ public abstract class Beverage
     {
         return _cost;
     }
+    public virtual int Millilitres { get; set; }
 }
 public class Coffee: Beverage
 {
@@ -76,6 +81,12 @@ public abstract class AddOnDecorator: Beverage
     public Beverage Beverage { get; set; }
     public abstract override string Description();
     public abstract override double Cost();
+
+    public override int Millilitres
+    {
+        get { return Beverage.Millilitres; }
+        set { Beverage.Millilitres = value; }
+    }
 }
 public class AddOnSaltedCaramel: AddOnDecorator
 {
@@ -141,3 +152,9 @@ public class AddOnSpeakingDrink: AddOnDecorator
     }
 }
 
+public enum Size
+{
+    Large,
+    Medium,
+    Small
+}
