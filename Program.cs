@@ -1,22 +1,73 @@
-﻿Beverage myCoffee = new Coffee();
-myCoffee.Millilitres = 120;
-myCoffee = new AddOnSaltedCaramel(myCoffee);
+﻿// if we expect some things to change about a class, and some things to stay the same
+// and some classes can reuse the behaviour of others, but not all, we should use the 
+// strategy pattern
 
-Console.WriteLine(myCoffee.Cost());
-Console.WriteLine(myCoffee.Millilitres);
-Console.WriteLine(myCoffee.Description());
+// code against interfaces
 
-Beverage myTea = new Tea();
-myTea.Millilitres = 100;
-myTea = new AddOnSugar(myTea);
-myTea = new AddOnSugar(myTea);
-myTea = new AddOnSaltedCaramel(myTea);
-myTea = new AddOnCream(myTea);
-myTea = new AddOnSpeakingDrink(myTea);
+BeverageVendor driveThru = new DriveThruVendor();
+driveThru.Order("coffee");
+BeverageVendor MoonDollars = new FancyVendor();
+MoonDollars.Order("coffee");
 
-Console.WriteLine(myTea.Cost());
-Console.WriteLine(myTea.Millilitres);
-Console.WriteLine(myTea.Description());
+public abstract class BeverageVendor
+{
+    // beverage vendor ALWAYS runs the factory method and then the Pour, Lid, Sell methods
+    public Beverage Order(string order)
+    {
+        Beverage beverage;
+        beverage = createBeverage(order);
+        beverage.Pour();
+        beverage.Lid();
+        beverage.Sell();
+
+        return beverage;
+    }
+
+    public abstract Beverage createBeverage(string type);
+}
+
+public class DriveThruVendor: BeverageVendor
+{
+    // only serves coffee and tea
+    public override Beverage createBeverage(string type)
+    {
+        Beverage beverage;
+        if(type == "tea")
+        {
+            beverage = new Tea();
+            return beverage;
+        } else if (type == "coffee")
+        {
+            beverage = new Coffee();
+            return beverage;
+        } else
+        {
+            throw new Exception("We don't serve that here, you maniac.");
+        }
+    }
+}
+public class FancyVendor : BeverageVendor
+{
+    // only serves coffee and tea
+    public override Beverage createBeverage(string type)
+    {
+        Beverage beverage;
+         if (type == "coffee")
+        {
+            beverage = new Espresso();
+            return beverage;
+        } else if (type == "tea")
+        {
+            beverage = new Tea();
+            return beverage;
+        }
+        else
+        {
+            throw new Exception("We don't serve that here, you maniac.");
+        }
+    }
+}
+public class BlackMarketVendor
 
 
 public abstract class Beverage
@@ -32,7 +83,18 @@ public abstract class Beverage
     {
         return _cost;
     }
-    public virtual int Millilitres { get; set; }
+    public void Pour()
+    {
+        Console.WriteLine($"Pouring the {Description()}");
+    }
+    public void Lid()
+    {
+        Console.WriteLine("Putting a lid on it");
+    }
+    public void Sell()
+    {
+        Console.WriteLine($"Selling the drink for {Cost()}");
+    }
 }
 public class Coffee: Beverage
 {
@@ -82,11 +144,6 @@ public abstract class AddOnDecorator: Beverage
     public abstract override string Description();
     public abstract override double Cost();
 
-    public override int Millilitres
-    {
-        get { return Beverage.Millilitres; }
-        set { Beverage.Millilitres = value; }
-    }
 }
 public class AddOnSaltedCaramel: AddOnDecorator
 {
@@ -152,9 +209,4 @@ public class AddOnSpeakingDrink: AddOnDecorator
     }
 }
 
-public enum Size
-{
-    Large,
-    Medium,
-    Small
-}
+
